@@ -27,10 +27,6 @@ var data = func() (data [][]int) {
 	return
 }()
 
-type Coord struct {
-	y, x int
-}
-
 func main() {
 	fmt.Printf("Part 1: %v\n", part1(data))
 	fmt.Printf("Part 1: %v\n", part2(data))
@@ -38,12 +34,11 @@ func main() {
 
 func part1(data [][]int) int {
 	var total int
-	lengthy := len(data)
-	lengthx := len(data[0])
+	lengthy, lengthx := len(data), len(data[0])
 
 	for y := range data {
 		for x := range data[y] {
-			if lookaround(data, x, y, lengthx, lengthy) {
+			if findvent(data, x, y, lengthx, lengthy) {
 				total += data[y][x] + 1
 			}
 		}
@@ -53,37 +48,30 @@ func part1(data [][]int) int {
 }
 
 func part2(data [][]int) int {
-	var total int = 1
 	var basins []int
-	lengthy := len(data)
-	lengthx := len(data[0])
+	lengthy, lengthx := len(data), len(data[0])
 
 	for y := range data {
 		for x := range data[y] {
-			if lookaround(data, x, y, lengthx, lengthy) {
-				size := findbasin(data, x, y)
+			if findvent(data, x, y, lengthx, lengthy) {
+				size := findbasinsize(data, x, y)
 				basins = append(basins, size)
 			}
 		}
 	}
 
 	sort.Ints(basins)
-	for _, v := range basins[len(basins)-3:] {
-		total *= v
-	}
+	count := len(basins)
 
-	return total
+	return basins[count-1] * basins[count-2] * basins[count-3]
 }
 
-func findbasin(data [][]int, x, y int) int {
-	var f func(int, int, int, rune) int
-	walked := map[Coord]bool{}
+func findbasinsize(data [][]int, x, y int) int {
+	var f func(int, int, int) int
 
 	start, ly, lx := data[y][x], len(data), len(data[0])
 
-	f = func(x, y, v int, dir rune) int {
-		coord := Coord{y, x}
-
+	f = func(x, y, v int) int {
 		if x < 0 || y < 0 || x == lx || y == ly {
 			return 0
 		}
@@ -91,30 +79,18 @@ func findbasin(data [][]int, x, y int) int {
 		curr := data[y][x]
 		flow := curr-v > 0
 
-		if _, ok := walked[coord]; ok || !flow || curr == 9 {
+		if !flow || curr >= 9 {
 			return 0
 		}
 
-		walked[coord] = true
-
-		switch dir {
-		case 'u':
-			return 1 + f(x, y-1, curr, 'u') + f(x-1, y, curr, 'l') + f(x+1, y, curr, 'r')
-		case 'd':
-			return 1 + f(x, y+1, curr, 'd') + f(x-1, y, curr, 'l') + f(x+1, y, curr, 'r')
-		case 'l':
-			return 1 + f(x-1, y, curr, 'l') + f(x, y-1, curr, 'u') + f(x, y+1, curr, 'd')
-		case 'r':
-			return 1 + f(x+1, y, curr, 'r') + f(x, y-1, curr, 'u') + f(x, y+1, curr, 'd')
-		}
-
-		return 0
+		data[y][x] = 10
+		return 1 + f(x, y-1, curr) + f(x, y+1, start) + f(x-1, y, curr) + f(x+1, y, curr)
 	}
 
-	return 1 + f(x, y-1, start, 'u') + f(x, y+1, start, 'd') + f(x-1, y, start, 'l') + f(x+1, y, start, 'r')
+	return 1 + f(x, y-1, start) + f(x, y+1, start) + f(x-1, y, start) + f(x+1, y, start)
 }
 
-func lookaround(data [][]int, x, y, lx, ly int) bool {
+func findvent(data [][]int, x, y, lx, ly int) bool {
 	var min bool = true
 
 	if y == 0 {
