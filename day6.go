@@ -8,36 +8,37 @@ import (
 	"strings"
 )
 
-var data = func() (data []int) {
-	file, _ := os.Open("data.txt")
+var dataDay6 = func() (dataDay6 []int) {
+	file, _ := os.Open("data/day6.txt")
 	scanner := bufio.NewScanner(file)
 	scanner.Split(bufio.ScanLines)
 
 	scanner.Scan()
 	for _, s := range strings.Split(scanner.Text(), ",") {
 		n, _ := strconv.Atoi(s)
-		data = append(data, n)
+		dataDay6 = append(dataDay6, n)
 	}
 
 	return
-}()
+}
 
 type Simulation struct {
 	counts *[9]int
 	period int
 }
 
-func main() {
-	fmt.Printf("Part 1: %v\n", part1(data))
-	fmt.Printf("Part 2: %v\n", part2(data))
+func day6() {
+	data := dataDay6()
+	fmt.Printf("Part 1: %v\n", day6part1(data))
+	fmt.Printf("Part 2: %v\n", day6part2(data))
 }
 
-func part1(data []int) int {
+func day6part1(data []int) int {
 	simulation := NewSimulation(data, 80)
 	return simulation.simulate()
 }
 
-func part2(data []int) int {
+func day6part2(data []int) int {
 	simulation := NewSimulation(data, 256)
 	return simulation.simulate()
 }

@@ -8,17 +8,17 @@ import (
 	"strings"
 )
 
-var data = func() (data []string) {
-	file, _ := os.Open("data.txt")
+var dataDay2 = func() (dataDay2 []string) {
+	file, _ := os.Open("data/day2.txt")
 	scanner := bufio.NewScanner(file)
 	scanner.Split(bufio.ScanLines)
 
 	for scanner.Scan() {
-		data = append(data, scanner.Text())
+		dataDay2 = append(dataDay2, scanner.Text())
 	}
 
 	return
-}()
+}
 
 type Position struct {
 	Horizontal int
@@ -26,7 +26,7 @@ type Position struct {
 	Aim        int
 }
 
-func part1(data []string) int {
+func day2part1(data []string) int {
 	pos := Position{}
 	for _, v := range data {
 		command := strings.Split(v, " ")
@@ -44,7 +44,7 @@ func part1(data []string) int {
 	return pos.Vertical * pos.Horizontal
 }
 
-func part2(data []string) int {
+func day2part2(data []string) int {
 	pos := Position{}
 	for _, v := range data {
 		command := strings.Split(v, " ")
@@ -63,7 +63,8 @@ func part2(data []string) int {
 	return pos.Vertical * pos.Horizontal
 }
 
-func main() {
-	fmt.Printf("Part 1: %v\n", part1(data))
-	fmt.Printf("Part 2: %v\n", part2(data))
+func day2() {
+	data := dataDay2()
+	fmt.Printf("Part 1: %v\n", day2part1(data))
+	fmt.Printf("Part 2: %v\n", day2part2(data))
 }

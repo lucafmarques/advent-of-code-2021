@@ -9,8 +9,8 @@ import (
 	"strings"
 )
 
-var data = func() (data [][]int) {
-	file, _ := os.Open("data.txt")
+var dataDay9 = func() (dataDay9 [][]int) {
+	file, _ := os.Open("data/day9.txt")
 	scanner := bufio.NewScanner(file)
 	scanner.Split(bufio.ScanLines)
 
@@ -21,18 +21,19 @@ var data = func() (data [][]int) {
 			n, _ := strconv.Atoi(c)
 			lineData = append(lineData, n)
 		}
-		data = append(data, lineData)
+		dataDay9 = append(dataDay9, lineData)
 	}
 
 	return
-}()
-
-func main() {
-	fmt.Printf("Part 1: %v\n", part1(data))
-	fmt.Printf("Part 1: %v\n", part2(data))
 }
 
-func part1(data [][]int) int {
+func day9() {
+	data := dataDay9()
+	fmt.Printf("Part 1: %v\n", day9part1(data))
+	fmt.Printf("Part 1: %v\n", day9part2(data))
+}
+
+func day9part1(data [][]int) int {
 	var total int
 	lengthy, lengthx := len(data), len(data[0])
 
@@ -47,7 +48,7 @@ func part1(data [][]int) int {
 	return total
 }
 
-func part2(data [][]int) int {
+func day9part2(data [][]int) int {
 	var basins []int
 	lengthy, lengthx := len(data), len(data[0])
 

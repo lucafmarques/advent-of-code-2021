@@ -76,19 +76,19 @@ func (g Game) String() string {
 	return gamestate
 }
 
-var bingo = func() (bingo []string) {
-	file, _ := os.Open("data.txt")
+var dataDay4 = func() (dataDay4 []string) {
+	file, _ := os.Open("data/day4.txt")
 	scanner := bufio.NewScanner(file)
 	scanner.Split(bufio.ScanLines)
 
 	scanner.Scan()
-	bingo = strings.Split(scanner.Text(), ",")
+	dataDay4 = strings.Split(scanner.Text(), ",")
 
 	return
-}()
+}
 var loadGame = func() Game {
 	var data Game
-	file, _ := os.Open("data.txt")
+	file, _ := os.Open("data/day4.txt")
 	scanner := bufio.NewScanner(file)
 	scanner.Split(bufio.ScanLines)
 
@@ -117,21 +117,23 @@ var loadGame = func() Game {
 	return data
 }
 
-func main() {
-	p1 := part1(bingo, loadGame())
-	p2 := part2(bingo, loadGame())
+func day4() {
+	data := dataDay4()
+	p1 := day4part1(data)
+	p2 := day4part2(data)
 	fmt.Printf("Part 1: %v\n", p1)
 	fmt.Printf("Part 2: %v\n", p2)
 }
 
-func part1(bingo []string, data Game) int {
+func day4part1(bingo []string) int {
 	var total int
+	data := loadGame()
 	pos, board := findFirstBoardWin(bingo, data)
 	num, _ := strconv.Atoi(bingo[pos])
 
 	for _, row := range board.rows {
 		for _, v := range row {
-			if v.found == false {
+			if !v.found {
 				point, _ := strconv.Atoi(v.value)
 				total += point
 			}
@@ -141,14 +143,15 @@ func part1(bingo []string, data Game) int {
 	return total * num
 }
 
-func part2(bingo []string, data Game) int {
+func day4part2(bingo []string) int {
 	var total int
+	data := loadGame()
 	pos, board := findLastBoardWin(bingo, data)
 	num, _ := strconv.Atoi(bingo[pos])
 
 	for _, row := range board.rows {
 		for _, v := range row {
-			if v.found == false {
+			if !v.found {
 				point, _ := strconv.Atoi(v.value)
 				total += point
 			}

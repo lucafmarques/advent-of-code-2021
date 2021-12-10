@@ -15,21 +15,21 @@ type Display struct {
 
 var Sizes [10]int = [10]int{6, 2, 5, 5, 4, 5, 6, 3, 7, 6}
 
-var data = func() (data []Display) {
-	file, _ := os.Open("data.txt")
+var dataDay8 = func() (dataDay8 []Display) {
+	file, _ := os.Open("data/day8.txt")
 	scanner := bufio.NewScanner(file)
 	scanner.Split(bufio.ScanLines)
 
 	for scanner.Scan() {
 		line := strings.Split(scanner.Text(), " | ")
-		data = append(data, Display{
+		dataDay8 = append(dataDay8, Display{
 			noise: strings.Split(line[0], " "),
 			data:  strings.Split(line[1], " "),
 		})
 	}
 
 	return
-}()
+}
 
 func equal(source, target string) bool {
 	for _, s := range source {
@@ -84,7 +84,7 @@ func decode(noise []string, lengthMap map[int][]string) map[string]int {
 	return parsing
 }
 
-func part2(data []Display) int {
+func day8part2(data []Display) int {
 	var total int
 	for _, line := range data {
 		var number string
@@ -118,7 +118,7 @@ func part2(data []Display) int {
 	return total
 }
 
-func part1(data []Display) int {
+func day8part1(data []Display) int {
 	var count int
 
 	for _, d := range data {
@@ -133,7 +133,8 @@ func part1(data []Display) int {
 	return count
 }
 
-func main() {
-	fmt.Printf("Part 1: %v\n", part1(data))
-	fmt.Printf("Part 2: %v\n", part2(data))
+func day8() {
+	data := dataDay8()
+	fmt.Printf("Part 1: %v\n", day8part1(data))
+	fmt.Printf("Part 2: %v\n", day8part2(data))
 }

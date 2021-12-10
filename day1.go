@@ -7,22 +7,31 @@ import (
 	"strconv"
 )
 
-var data = func() (data []int) {
-	file, _ := os.Open("data.txt")
+var dataDay1 = func() (dataDay1 []int) {
+	file, _ := os.Open("data/day1.txt")
 	scanner := bufio.NewScanner(file)
 	scanner.Split(bufio.ScanLines)
 
 	for scanner.Scan() {
 		n, _ := strconv.Atoi(scanner.Text())
-		data = append(data, n)
+		dataDay1 = append(dataDay1, n)
 	}
 
 	return
-}()
+}
 
-func main() {
-	fmt.Printf("Part 1: %v\n", solve(data, 1))
-	fmt.Printf("Part 2: %v\n", solve(data, 3))
+func day1() {
+	data := dataDay1()
+	fmt.Printf("Part 1: %v\n", day1part1(data))
+	fmt.Printf("Part 2: %v\n", day1part2(data))
+}
+
+func day1part1(data []int) int {
+	return solve(data, 1)
+}
+
+func day1part2(data []int) int {
+	return solve(data, 3)
 }
 
 func solve(data []int, gap int) int {

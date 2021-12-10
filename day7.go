@@ -9,42 +9,47 @@ import (
 	"strings"
 )
 
-var data = func() (data []int) {
-	file, _ := os.Open("data.txt")
+var dataDay7 = func() (dataDay7 []int) {
+	file, _ := os.Open("data/day7.txt")
 	scanner := bufio.NewScanner(file)
 	scanner.Split(bufio.ScanLines)
 
 	scanner.Scan()
 	for _, s := range strings.Split(scanner.Text(), ",") {
 		n, _ := strconv.Atoi(s)
-		data = append(data, n)
+		dataDay7 = append(dataDay7, n)
 	}
 
 	return
-}()
+}
 
-func main() {
-	brute(data)
-	maths(data)
+func day7(kind string) {
+	data := dataDay7()
+	switch kind {
+	case "brute-force":
+		brute(data)
+	default:
+		maths(data)
+	}
 }
 
 func brute(data []int) {
 	fmt.Println("Brute Force Solution")
-	pos, fuel := part1brute(data)
+	pos, fuel := day7part1brute(data)
 	fmt.Printf("Part 1: %v %v\n", pos, fuel)
-	pos, fuel = part2brute(data)
+	pos, fuel = day7part2brute(data)
 	fmt.Printf("Part 2: %v %v\n", pos, fuel)
 }
 
 func maths(data []int) {
 	fmt.Println("Maths Solution")
-	pos, fuel := part1math(data)
+	pos, fuel := day7part1(data)
 	fmt.Printf("Part 1: %v %v\n", pos, fuel)
-	pos, fuel = part2math(data)
+	pos, fuel = day7part2(data)
 	fmt.Printf("Part 2: %v %v\n", pos, fuel)
 }
 
-func part1brute(data []int) (int, int) {
+func day7part1brute(data []int) (int, int) {
 	cost := func(n, m int) int {
 		return abs(n - m)
 	}
@@ -58,7 +63,7 @@ func part1brute(data []int) (int, int) {
 	return find(positions, fn)
 }
 
-func part2brute(data []int) (int, int) {
+func day7part2brute(data []int) (int, int) {
 	cost := func(n, m int) int {
 		diff := abs(n - m)
 		return (diff * (diff + 1)) / 2
@@ -105,7 +110,7 @@ func find(posMap map[int]int, fn func(n, m int) bool) (int, int) {
 	return pos, fuel
 }
 
-func part1math(data []int) (int, int) {
+func day7part1(data []int) (int, int) {
 	cost := func(n, m int) int {
 		return abs(n - m)
 	}
@@ -118,7 +123,7 @@ func part1math(data []int) (int, int) {
 	return data[median], calculateFuelCost(sorted, data[median], cost)
 }
 
-func part2math(data []int) (int, int) {
+func day7part2(data []int) (int, int) {
 	cost := func(n, m int) int {
 		diff := abs(n - m)
 		return (diff * (diff + 1)) / 2

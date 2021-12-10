@@ -30,8 +30,8 @@ func (m Map) String() string {
 	return output
 }
 
-var data = func() (data []Coord) {
-	file, _ := os.Open("data.txt")
+var dataDay5 = func() (dataDay5 []Coord) {
+	file, _ := os.Open("data/day5.txt")
 	scanner := bufio.NewScanner(file)
 	scanner.Split(bufio.ScanLines)
 
@@ -57,18 +57,19 @@ var data = func() (data []Coord) {
 			},
 		}
 
-		data = append(data, coord)
+		dataDay5 = append(dataDay5, coord)
 	}
 
 	return
-}()
-
-func main() {
-	fmt.Printf("Part 1: %v\n", part1(data))
-	fmt.Printf("Part 2: %v\n", part2(data))
 }
 
-func part1(coord []Coord) int {
+func day5() {
+	data := dataDay5()
+	fmt.Printf("Part 1: %v\n", day5part1(data))
+	fmt.Printf("Part 2: %v\n", day5part2(data))
+}
+
+func day5part1(coord []Coord) int {
 	var total int
 	var table Map
 
@@ -91,7 +92,7 @@ func part1(coord []Coord) int {
 	return total
 }
 
-func part2(coord []Coord) int {
+func day5part2(coord []Coord) int {
 	var total int
 	var table Map
 
@@ -146,14 +147,6 @@ func closestCenter(p1 Point, p2 Point) (Point, Point) {
 	}
 
 	return p2, p1
-}
-
-func abs(n int) int {
-	if n < 0 {
-		return -n
-	}
-
-	return n
 }
 
 func walk(n, m int) <-chan int {

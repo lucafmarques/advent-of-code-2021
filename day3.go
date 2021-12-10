@@ -8,24 +8,25 @@ import (
 	"strings"
 )
 
-var data = func() (data [][]string) {
-	file, _ := os.Open("data.txt")
+var dataDay3 = func() (dataDay3 [][]string) {
+	file, _ := os.Open("data/day3.txt")
 	scanner := bufio.NewScanner(file)
 	scanner.Split(bufio.ScanLines)
 
 	for scanner.Scan() {
-		data = append(data, strings.Split(scanner.Text(), ""))
+		dataDay3 = append(dataDay3, strings.Split(scanner.Text(), ""))
 	}
 
 	return
-}()
-
-func main() {
-	fmt.Printf("Part 1: %v\n", part1(data))
-	fmt.Printf("Part 2: %v\n", part2(data))
 }
 
-func part1(data [][]string) int64 {
+func day3() {
+	data := dataDay3()
+	fmt.Printf("Part 1: %v\n", day3part1(data))
+	fmt.Printf("Part 2: %v\n", day3part2(data))
+}
+
+func day3part1(data [][]string) int64 {
 	var common []string
 	var uncommon []string
 
@@ -49,7 +50,7 @@ func part1(data [][]string) int64 {
 	return gamma * epsilon
 }
 
-func part2(data [][]string) int64 {
+func day3part2(data [][]string) int64 {
 	oxygenBits := parseReport(data, 0, func(c0, c1 int) string {
 		if c0 <= c1 {
 			return "1"
