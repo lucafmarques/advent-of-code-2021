@@ -3,13 +3,71 @@ package main
 import (
 	"bufio"
 	"fmt"
+	"image"
 	"os"
 	"sort"
 	"strconv"
 	"strings"
 )
 
-var dataDay9 = func() (dataDay9 [][]int) {
+type Floor [][]int
+
+func (f Floor) Locate(pt Loc) int {
+	return f[pt.Y][pt.X]
+}
+
+func (f Floor) InBounds(pt Loc) bool {
+	if pt.X < 0 || pt.Y < 0 || pt.X == len(f[0]) || pt.Y == len(f) {
+		return false
+	}
+
+	return true
+}
+
+func (f Floor) Flood(pt Loc, lastVal int) int {
+	if !f.InBounds(pt) {
+		return 0
+	}
+
+	curr := f.Locate(pt)
+	flow := curr-lastVal > 0
+
+	if !flow || curr >= 9 {
+		return 0
+	}
+
+	f[pt.Y][pt.X] = 10
+
+	return 1 +
+		f.Flood(pt.Move(0, -1), curr) +
+		f.Flood(pt.Move(0, 1), curr) +
+		f.Flood(pt.Move(-1, 0), curr) +
+		f.Flood(pt.Move(1, 0), curr)
+}
+
+func (f Floor) BasinSize(pt Loc) int {
+	start := f.Locate(pt)
+
+	return 1 +
+		f.Flood(pt.Move(0, -1), start) +
+		f.Flood(pt.Move(0, 1), start) +
+		f.Flood(pt.Move(-1, 0), start) +
+		f.Flood(pt.Move(1, 0), start)
+}
+
+type Loc struct {
+	image.Point
+}
+
+func NewLocation(x, y int) Loc {
+	return Loc{image.Point{x, y}}
+}
+
+func (p Loc) Move(n, m int) Loc {
+	return NewLocation(p.X+n, p.Y+m)
+}
+
+var dataDay9 = func() (dataDay9 Floor) {
 	file, _ := os.Open("data/day9.txt")
 	scanner := bufio.NewScanner(file)
 	scanner.Split(bufio.ScanLines)
@@ -27,20 +85,14 @@ var dataDay9 = func() (dataDay9 [][]int) {
 	return
 }
 
-func day9() {
-	data := dataDay9()
-	fmt.Printf("Part 1: %v\n", day9part1(data))
-	fmt.Printf("Part 1: %v\n", day9part2(data))
-}
-
-func day9part1(data [][]int) int {
+func day9part1(fl Floor) int {
 	var total int
-	lengthy, lengthx := len(data), len(data[0])
 
-	for y := range data {
-		for x := range data[y] {
-			if findvent(data, x, y, lengthx, lengthy) {
-				total += data[y][x] + 1
+	for y := range fl {
+		for x := range fl[y] {
+			pt := NewLocation(x, y)
+			if isvent(fl, pt) {
+				total += fl.Locate(pt) + 1
 			}
 		}
 	}
@@ -48,73 +100,52 @@ func day9part1(data [][]int) int {
 	return total
 }
 
-func day9part2(data [][]int) int {
+func day9part2(floor Floor) int {
 	var basins []int
-	lengthy, lengthx := len(data), len(data[0])
 
-	for y := range data {
-		for x := range data[y] {
-			if findvent(data, x, y, lengthx, lengthy) {
-				size := findbasinsize(data, x, y)
-				basins = append(basins, size)
+	for y := range floor {
+		for x := range floor[y] {
+			loc := NewLocation(x, y)
+			if isvent(floor, loc) {
+				basins = append(basins, floor.BasinSize(loc))
 			}
 		}
 	}
 
 	sort.Ints(basins)
-	count := len(basins)
-
-	return basins[count-1] * basins[count-2] * basins[count-3]
+	return basins[len(basins)-1] * basins[len(basins)-2] * basins[len(basins)-3]
 }
 
-func findbasinsize(data [][]int, x, y int) int {
-	var f func(int, int, int) int
-
-	start, ly, lx := data[y][x], len(data), len(data[0])
-
-	f = func(x, y, v int) int {
-		if x < 0 || y < 0 || x == lx || y == ly {
-			return 0
-		}
-
-		curr := data[y][x]
-		flow := curr-v > 0
-
-		if !flow || curr >= 9 {
-			return 0
-		}
-
-		data[y][x] = 10
-		return 1 + f(x, y-1, curr) + f(x, y+1, start) + f(x-1, y, curr) + f(x+1, y, curr)
-	}
-
-	return 1 + f(x, y-1, start) + f(x, y+1, start) + f(x-1, y, start) + f(x+1, y, start)
-}
-
-func findvent(data [][]int, x, y, lx, ly int) bool {
+func isvent(floor Floor, pt Loc) bool {
 	var min bool = true
 
-	if y == 0 {
-		min = min && (data[y][x] < data[y+1][x])
-	} else if y == ly-1 {
-		min = min && (data[y][x] < data[y-1][x])
+	if pt.Y == 0 {
+		min = min && (floor.Locate(pt) < floor.Locate(pt.Move(0, 1)))
+	} else if pt.Y == len(floor)-1 {
+		min = min && (floor.Locate(pt) < floor.Locate(pt.Move(0, -1)))
 	} else {
-		min = min && (data[y][x] < data[y-1][x])
-		min = min && (data[y][x] < data[y+1][x])
+		min = min && (floor.Locate(pt) < floor.Locate(pt.Move(0, -1)))
+		min = min && (floor.Locate(pt) < floor.Locate(pt.Move(0, 1)))
 	}
 
 	if !min {
 		return false
 	}
 
-	if x == 0 {
-		min = min && (data[y][x] < data[y][x+1])
-	} else if x == lx-1 {
-		min = min && (data[y][x] < data[y][x-1])
+	if pt.X == 0 {
+		min = min && (floor.Locate(pt) < floor.Locate(pt.Move(1, 0)))
+	} else if pt.X == len(floor[0])-1 {
+		min = min && (floor.Locate(pt) < floor.Locate(pt.Move(-1, 0)))
 	} else {
-		min = min && (data[y][x] < data[y][x-1])
-		min = min && (data[y][x] < data[y][x+1])
+		min = min && (floor.Locate(pt) < floor.Locate(pt.Move(-1, 0)))
+		min = min && (floor.Locate(pt) < floor.Locate(pt.Move(1, 0)))
 	}
 
 	return min
+}
+
+func day9() {
+	data := dataDay9()
+	fmt.Printf("Part 1: %v\n", day9part1(data))
+	fmt.Printf("Part 2: %v\n", day9part2(data))
 }
